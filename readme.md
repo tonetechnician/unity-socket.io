@@ -1,11 +1,19 @@
---------------------------------------------------------------------------------
-        DEPRECATED                   SocketIO for Unity - v1.0.0                          
---------------------------------------------------------------------------------
+# Unity-socket-io
 
-# Deprecation Notice #
+This is a Unity to socket-io integration. The original project has been [deprecated](https://github.com/fpanettieri/unity-socket.io-DEPRECATED). I need to use this for a project currently, so I've decided to revive it. 
 
-  I haven't used this package in almost 2 years now, the main protocol will
-  probably work, but I no longer mantain it nor add support for new features.
+A big issue I found with deprecated version is that it breaks when trying to receive socket.io messages of the following format
+
+```
+// .js file
+
+socket.emit('sendData', x, y, z);
+```
+
+This caused the Unity component to output an error and the socket would be reopened. I tracked the issue down to the Parser.cs file and have made changes to allow for this format of data sending.
+
+I'm sure there are more issues that I've missed but as I use the package more I'll pick up on these add fixes here. Hopefully this can remain a supported project, but I can't guarantee this yet. 
+
 
 # Overview #
   
