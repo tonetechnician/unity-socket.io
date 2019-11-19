@@ -33,21 +33,56 @@ namespace SocketIO
 	{
 		public SocketIOEvent Parse(JSONObject json)
 		{
-			if (json.Count < 1 || json.Count > 2) {
-				throw new SocketIOException("Invalid number of parameters received: " + json.Count);
+			if (json.Count < 1) {
+        #if SOCKET_IO_DEBUG
+        Debug.Log("Invalid number of parameters received: " + json.Count);
+        #endif
+        throw new SocketIOException("Invalid number of parameters received: " + json.Count);
 			}
 
 			if (json[0].type != JSONObject.Type.STRING) {
+        #if SOCKET_IO_DEBUG
+        Debug.Log("Invalid parameter type. " + json[0].type + " received while expecting " + JSONObject.Type.STRING);
+        #endif
 				throw new SocketIOException("Invalid parameter type. " + json[0].type + " received while expecting " + JSONObject.Type.STRING);
 			}
 
 			if (json.Count == 1) {
+        #if SOCKET_IO_DEBUG
+        Debug.Log("json.Count == 1:");
+        Debug.Log(json);
+        #endif
 				return new SocketIOEvent(json[0].str);
 			} 
+
+      if (json.Count > 2){
+        // Create a JSON Object with the new fields
+        #if SOCKET_IO_DEBUG
+        Debug.Log("Message recieved as multiple parameters, parsing into object: ");
+        #endif
+        string JSONStringObject = "{";
+        for (int i = 1; i < json.Count; i++)
+        {
+            if (i == json.Count - 1)
+            {
+                JSONStringObject += string.Format("\"{0}\":", i.ToString()) + json[i]; // "arg_1: "val", 
+            }
+            else
+            {
+                JSONStringObject += string.Format("\"{0}\":", i.ToString()) + json[i] + ","; // "arg_1: "val", 
+            }
+        }
+        JSONStringObject += "}";
+
+        return new SocketIOEvent(json[0].str, new JSONObject(JSONStringObject));
+      }
 
 			if (json[1].type == JSONObject.Type.OBJECT || json[1].type == JSONObject.Type.STRING) {
 				return new SocketIOEvent(json[0].str, json[1]);
 			} else {
+        #if SOCKET_IO_DEBUG
+        Debug.Log("Invalid argument type. " + json[1].type + " received while expecting " + JSONObject.Type.OBJECT);
+        #endif
 				throw new SocketIOException("Invalid argument type. " + json[1].type + " received");
 			}
 		}
